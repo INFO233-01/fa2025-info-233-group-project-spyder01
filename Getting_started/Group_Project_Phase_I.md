@@ -1,7 +1,9 @@
 # Group Project Phase I
 
 INFO-233 Group Project – Phase I – Project Definition
+
 Project Name: Stock Portfolio Builder
+
 Team Name: Spyder01
 
 1.	Define the problem you are trying to solve. 
