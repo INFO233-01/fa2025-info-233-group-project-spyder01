@@ -5,16 +5,31 @@ Team Name: Spyder01
 Group 1
 """
 # Modules
-#import
-
+#IMPORTS HERE
 # Functions
-def stock_api():
+def stock_api(): # Stock API
     pass
-def mail_api():
+def mail_api(): # Email API
     pass
-def calc_stock():
+def calc_stock(investment, stock1, stock2, stock3, stock4): # Calculate
     pass
-def main():
-    pass
+def main(): # Main Program
+    # Variables
+    stock_choices = ("low", "active", "high")
+    print("Welcome to Stock Portfolio Builder")
+    while True:
+        try:
+            # Inputs to investment and choice
+            investment = int(input("How much would you like to invest into your stock portfolio? "))
+            choice = input("Please choose between low, active or high stock performance: ")
+            if choice.lower() in stock_choices:
+                break
+            else:
+                print("Please enter a valid input.")
+        except ValueError:
+            print("Please enter a valid input.")
+    stock1, stock2, stock3, stock4 = stock_api(choice) # get 4 stock prices and info
+    calc_stock(investment, stock1, stock2, stock3, stock4) # Calculate invesment split between stocks
+    mail_api # email api
 if __name__ =="__main__":  
 	main()
