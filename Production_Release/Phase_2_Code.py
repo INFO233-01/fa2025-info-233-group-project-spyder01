@@ -28,8 +28,8 @@ def main(): # Main Program
                 print("Please enter a valid input.")
         except ValueError:
             print("Please enter a valid input.")
-    stock_info = stock_api(choice) # get 4 stock prices and info
-    calc_stock(investment, stock_info) # Calculate invesment split between stocks
-    mail_api # email api
+#    stock_info = stock_api(choice) # get 4 stock prices and info
+#    calc_stock(investment, stock_info) # Calculate invesment split between stocks
+#    mail_api # email stock portfolio to user
 if __name__ =="__main__":  
 	main()
