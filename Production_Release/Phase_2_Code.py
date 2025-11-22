@@ -11,8 +11,12 @@ def stock_api(): # Stock API
     pass
 def mail_api(): # Email API
     pass
-def calc_stock(investment, stock_info): # Calculate
+def calc_stock(investment, stock_info): # Calculate cost and number of stocks
     pass
+    # cost = stock_info[4 stocks] # The cost to buy 1 of each stock
+    # stock_amount = investment / cost # Number of each stock purchased
+    # total = stock_amount * cost # Total cost of purchased stocks
+    # return stock_amount, total # Returns total and number of stocks
 def main(): # Main Program
     # Variables
     stock_choices = ("low", "active", "high")
@@ -29,7 +33,7 @@ def main(): # Main Program
         except ValueError:
             print("Please enter a valid input.")
 #    stock_info = stock_api(choice) # get 4 stock prices and info
-#    calc_stock(investment, stock_info) # Calculate invesment split between stocks
-#    mail_api() # email stock portfolio to user
+#    stock_amount, total_cost = calc_stock(investment, stock_info) # Calculate invesment split between stocks
+#    mail_api # email stock portfolio to user
 if __name__ =="__main__":  
 	main()
