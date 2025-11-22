@@ -20,11 +20,14 @@ def calc_stock(investment, stock_info): # Calculate cost and number of stocks
 def main(): # Main Program
     # Variables
     stock_choices = ("low", "active", "high")
-    print("Welcome to Stock Portfolio Builder")
+    print("Welcome to Stock Portfolio Builder\n")
     while True:
         try:
             # Inputs to investment and choice
             investment = int(input("How much would you like to invest into your stock portfolio? "))
+            print("\nLow: Stocks with largest drop in value today.")
+            print("Active: Stocks with the highest trading volume today.")
+            print("High: Stocks with the largest rise in value today.\n")
             choice = input("Please choose between low, active or high stock performance: ")
             if choice.lower() in stock_choices:
                 break
