@@ -5,7 +5,7 @@ Team Name: Spyder01
 Group 1
 """
 # Modules
-#IMPORTS HERE
+# IMPORTS HERE
 # Functions
 def stock_api(): # Stock API
     pass
