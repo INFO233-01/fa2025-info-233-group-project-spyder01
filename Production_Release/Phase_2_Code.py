@@ -5,10 +5,27 @@ Team Name: Spyder01
 Group 1
 """
 # Modules
-# IMPORTS HERE
+import requests
 # Functions
 def stock_api(): # Stock API
-    pass
+    pass 
+API_KEY="API KEY GOES HERE"
+URL = f"https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={API_KEY}"
+def stock_api(choice):
+response = requests.get(URL)
+data = response.json()
+
+low = data.get("top_losers", [])
+active = data.get("most_actively_traded", [])
+high = data.get("top_gainers", [])
+
+if choice == "low":
+    return low[:4]
+elif choice == "active":
+    return active[:4]
+elif choice == "high":
+    return high[:4]
+return []
 def mail_api(): # Email API
     pass
 def calc_stock(investment, stock_info): # Calculate cost and number of stocks
