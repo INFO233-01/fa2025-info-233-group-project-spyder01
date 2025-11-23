@@ -24,41 +24,44 @@ def stock_api(choice):
     elif choice == "high":
         return high[:4]
     return []
-def mail_api(): # Email API
-    message = Mail(from_email = 'clee24@ramapo.edu',
+def email_api(calc_message): # Email API
+    message = Mail(from_email = 'tlinton@ramapo.edu',
     				to_emails ='clee24@ramapo.edu',
-    				subject ='Testing the SendGrid API for our group project',
-    				html_content ='Hello, this is to see if I called the API correctly.')
-    sg = SendGridAPIClient(api_key='') 
+    				subject ='Stock Portfolio',
+    				html_content = calc_message)
+    sg = SendGridAPIClient(api_key='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') 
     response = sg.send(message)
-    print(response.status_code, response.body)
 def calc_stock(investment, stock_info): # Calculate cost and number of stocks
-    pass
-    # cost = stock_info[ticker:price] # The cost to buy 1 of each stock
-    # stock_amount = investment / cost # Number of each stock purchased
-    # total = stock_amount * cost # Total cost of purchased stocks
-    # return stock_amount, total # Returns total and number of stocks
+    cost = 0.0
+    stock_amount = 0
+    for number in range(0, 4): # Adds all 4 stocks
+        stock = float(stock_info[number]['price'])
+        cost += stock # The cost to buy 1 of each stock
+    stock_amount = int(investment // cost) # Number of each stock purchased
+    total = round(stock_amount * cost,2) # Total cost of purchased stocks
+    remainder = round(investment - total,2) # Remaining balance after purchase
+    email_message = (total, stock_amount, remainder) # Tuple information for email
+    return(email_message)
 def main(): # Main Program
     # Variables
     stock_choices = ("low", "active", "high")
     print("Welcome to Stock Portfolio Builder\n")
-    while True:
-        try:
+    while True: # while loop until correct input
+        try: # try except ValueError
             # Inputs to investment and choice
             investment = int(input("How much would you like to invest into your stock portfolio? "))
             print("\nLow: Stocks with largest drop in value today.")
             print("Active: Stocks with the highest trading volume today.")
             print("High: Stocks with the largest rise in value today.\n")
             choice = input("Please choose between low, active or high stock performance: ")
-            if choice.lower() in stock_choices:
+            if choice.lower() in stock_choices: # Checks if choice is in stock_choices
                 break
             else:
                 print("Please enter a valid input.")
         except ValueError:
             print("Please enter a valid input.")
-    stock_info = stock_api(choice) # get 4 stock prices and info
-    print(stock_info)
-#    stock_amount, total_cost = calc_stock(investment, stock_info) # Calculate invesment split between stocks
-    mail_api # email stock portfolio to user
+    stock_info = stock_api(choice) # Get stock information
+    calc_message = calc_stock(investment, stock_info) # Calculate stocks and investment 
+    email_api(calc_message) # Email stock portfolio to user
 if __name__ =="__main__":  
 	main()
