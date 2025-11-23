@@ -7,10 +7,20 @@ Group 1
 # Modules
 # IMPORTS HERE
 # Functions
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
 def stock_api(): # Stock API
     pass
 def mail_api(): # Email API
-    pass
+    message = Mail(from_email = 'whatevermail@gmail.com',
+              to_emails='whateveremail@gmail.com',
+              subject='Testing the SendGrid API for our group project',
+              html_content='Hello, this is to see if I called the API correctly.')
+
+sg = SendGridAPIClient(api_key='') 
+response = sg.send(message)
+print(response.status_code, response.body)
 def calc_stock(investment, stock_info): # Calculate cost and number of stocks
     pass
     # cost = stock_info[4 stocks] # The cost to buy 1 of each stock
