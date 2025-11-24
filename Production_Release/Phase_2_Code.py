@@ -25,11 +25,11 @@ def stock_api(choice):
         return high[:4]
     return []
 def email_api(calc_message): # Email API
-    message = Mail(from_email = 'tlinton@ramapo.edu',
-    				to_emails ='clee24@ramapo.edu',
-    				subject ='Stock Portfolio',
-    				html_content = '')
-    sg = SendGridAPIClient(api_key='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') 
+    message = Mail(from_email = 'clee24@ramapo.edu',
+    	to_emails ='clee24@ramapo.edu',
+    	subject ='Stock Portfolio',
+    	html_content = f"<div>Investment: {calc_message['Investment']}</div><div>Number of each stock: {calc_message['Stocks']}</div>")
+    sg = SendGridAPIClient(api_key='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') 
     response = sg.send(message)
 def calc_stock(investment, stock_info): # Calculate cost and number of stocks
     cost = 0.0
