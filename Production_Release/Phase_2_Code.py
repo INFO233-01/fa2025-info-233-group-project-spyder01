@@ -43,25 +43,23 @@ def stock_api(choice): # Gets stock information and returns info
             f"  Change: {info['change_amount']} ({info['change_percentage']})\n"
             f"-----------------------------------\n")
     print(stock_string) # Output stock_string: stock information
-    stock_message = "-----------------------------------------<br>"
-    stock_message += "<b>Stock Information</b><br>"
-    stock_message += "-----------------------------------------<br>"
+    stock_message = "<h2><b>Stock Information</b><br></h2>"
     for key, info in stock_dict.items(): # for loop to create stock_string for email
         stock_message += (
             f"<b>{key}</b><br>"
             f"  Symbol: {info['symbol']}<br>"
             f"  Price: ${info['price']}<br>"
-            f"  Change: {info['change_amount']} ({info['change_percentage']})<br>"
-            f"-----------------------------------------<br>")
+            f"  Change: {info['change_amount']} ({info['change_percentage']})<br><br>")
     return selected, stock_message # Return selected, stock_string
 def email_api(calc_message, stock_string): # Emails information to user
+    email_address = input("\nEnter your email address: ")
     message = Mail(from_email = 'clee24@ramapo.edu',
-    				to_emails ='clee24@ramapo.edu',
+    				to_emails = email_address,
     				subject ='Stock Portfolio',
-    				html_content = f"""<div>{stock_string}</div>
-                <div>{calc_message}</div>""")
+    				html_content = f"{stock_string}<br>{calc_message}")
     sg = SendGridAPIClient(api_key='EMAIL API KEY HERE') 
     response = sg.send(message)
+    print("\nYour email has been sent.\nThank you for using Stock Portfolio Builder.")
 def calc_stock(investment, stock_dict): # Calculate cost and number of stocks
     cost = 0.0
     stock_amount = 0
@@ -72,16 +70,18 @@ def calc_stock(investment, stock_dict): # Calculate cost and number of stocks
     stock_amount = int(investment // cost) # Number of each stock purchased
     total = round(stock_amount * cost,2) # Total cost of purchased stocks
     remainder = round(investment - total,2) # Remaining balance after purchase
-    print(f"Investment: {total}\nNumber of each stock: {stock_amount}\nRemaining balance: {remainder}")
-    calc_string = (f"""<b>Stock Portfolio Information</b><br>
-                   -----------------------------------------<br>
-                   Investment: {investment}<br>Volume of each stock: {stock_amount}
-                   <br>Investment in stocks: {total}<br>Remaining balance: {remainder}""")
+    print(f"Starting Balance: ${investment}\nNumber of each stock: {stock_amount}\n"
+          f"Investment: ${total}\nEnding balance: ${remainder}")
+    calc_string = (f"""<h2><b>Investment Information</b></h2><br>
+                   <b>Starting Balance</b>: ${investment}<br><br>
+                   <b>Volume of each stock</b>: {stock_amount}<br><br>
+                   <b>Investment</b>: ${total}<br><br>
+                   <b>Ending Balance</b>: ${remainder}<br><br>""")
     return calc_string # Return output for email
 def main(): # Main Program
     # Variables
     stock_choices = ("low", "active", "high")
-    print("Welcome to Stock Portfolio Builder\n")
+    print("\nWelcome to Stock Portfolio Builder.\n")
     while True: # while loop until correct input
         try: # try except ValueError
             # Inputs to investment and choice
@@ -98,7 +98,15 @@ def main(): # Main Program
         except ValueError:
             print("Please enter a valid input.")
     stock_dict, stock_string = stock_api(choice) # Get stock information
-    calc_message = calc_stock(investment, stock_dict) # Calculate stocks and investment 
-    email_api(calc_message, stock_string) # Email stock portfolio to user
+    calc_message = calc_stock(investment, stock_dict) # Calculate stocks and investment
+    while True: # while True loop for email input
+        email = input("\nDo you want this information emailed to you?\nYes or No: ")
+        if email.lower() == "yes": # if elif else check if user wants email
+            email_api(calc_message, stock_string) # Email stock portfolio to user
+            break
+        elif email.lower() == "no":
+            break
+        else:
+            print(f"{email} is not a valid input.")       
 if __name__ =="__main__":  
 	main()
