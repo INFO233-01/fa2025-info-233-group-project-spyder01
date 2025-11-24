@@ -72,7 +72,7 @@ def calc_stock(investment, stock_dict): # Calculate cost and number of stocks
     stock_amount = int(investment // cost) # Number of each stock purchased
     total = round(stock_amount * cost,2) # Total cost of purchased stocks
     remainder = round(investment - total,2) # Remaining balance after purchase
-    print(f"Investment: {total}\nNumber of each stock: {stock_amount}\nRemaining balance: {remainder}")
+    print(f"Investment: {total}\nVolume of each stock: {stock_amount}\nRemaining balance: {remainder}")
     calc_string = (f"""<b>Stock Portfolio Information</b><br>
                    -----------------------------------------<br>
                    Investment: {investment}<br>Volume of each stock: {stock_amount}
