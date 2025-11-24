@@ -55,8 +55,9 @@ def stock_api(choice): # Gets stock information and returns info
             f"-----------------------------------------<br>")
     return selected, stock_message # Return selected, stock_string
 def email_api(calc_message, stock_string): # Emails information to user
-    message = Mail(from_email = 'clee24@ramapo.edu',
-    				to_emails ='clee24@ramapo.edu',
+	user_email = input("Enter the email address you want the information sent to:") #variable so the user can enter their email
+    message = Mail(from_email = 'tlinton@ramapo.edu',
+    				to_emails = user_email,
     				subject ='Stock Portfolio',
     				html_content = f"""<div>{stock_string}</div>
                 <div>{calc_message}</div>""")
