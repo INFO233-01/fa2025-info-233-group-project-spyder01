@@ -28,7 +28,7 @@ def email_api(calc_message): # Email API
     message = Mail(from_email = 'tlinton@ramapo.edu',
     				to_emails ='clee24@ramapo.edu',
     				subject ='Stock Portfolio',
-    				html_content = calc_message)
+    				html_content = '')
     sg = SendGridAPIClient(api_key='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') 
     response = sg.send(message)
 def calc_stock(investment, stock_info): # Calculate cost and number of stocks
@@ -40,7 +40,10 @@ def calc_stock(investment, stock_info): # Calculate cost and number of stocks
     stock_amount = int(investment // cost) # Number of each stock purchased
     total = round(stock_amount * cost,2) # Total cost of purchased stocks
     remainder = round(investment - total,2) # Remaining balance after purchase
-    email_message = (total, stock_amount, remainder) # Tuple information for email
+    print(f"Investment: {total}\nNumber of each stock: {stock_amount}\nRemaining balance: {remainder}")
+    email_message = {'Investment':total,
+                     'Stocks': stock_amount,
+                     'Remainder': remainder} # Dictionary information for email
     return(email_message)
 def main(): # Main Program
     # Variables
