@@ -26,14 +26,17 @@ def stock_api(choice):
     return []
 def email_api(calc_message): # Email API
     message = Mail(from_email = 'clee24@ramapo.edu',
-    	to_emails ='clee24@ramapo.edu',
-    	subject ='Stock Portfolio',
-    	html_content = f"<div>Investment: {calc_message['Investment']}</div><div>Number of each stock: {calc_message['Stocks']}</div>")
+    				to_emails ='clee24@ramapo.edu',
+    				subject ='Stock Portfolio',
+    				html_content = f"""<div>Investment: {calc_message['Investment']}</div>
+                    <div>Number of each stock: {calc_message['Stocks']}</div>
+                    <div>Remaining balance: {calc_message['Remainder']}</div>""")
     sg = SendGridAPIClient(api_key='EMAIL KEY HERE') 
     response = sg.send(message)
 def calc_stock(investment, stock_info): # Calculate cost and number of stocks
     cost = 0.0
     stock_amount = 0
+    email_message = {}
     for number in range(0, 4): # Adds all 4 stocks
         stock = float(stock_info[number]['price'])
         cost += stock # The cost to buy 1 of each stock
@@ -57,6 +60,7 @@ def main(): # Main Program
             print("Active: Stocks with the highest trading volume today.")
             print("High: Stocks with the largest rise in value today.\n")
             choice = input("Please choose between low, active or high stock performance: ")
+            print("")
             if choice.lower() in stock_choices: # Checks if choice is in stock_choices
                 break
             else:
