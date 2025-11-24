@@ -10,7 +10,7 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 # Functions
 def stock_api(choice):
-    API_KEY = ("WUYXNSIWB11JPE9V")
+    API_KEY = ("STOCK KEY HERE")
     URL = (f"https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={API_KEY}")
     response = requests.get(URL)
     data = response.json()
@@ -29,7 +29,7 @@ def email_api(calc_message): # Email API
     	to_emails ='clee24@ramapo.edu',
     	subject ='Stock Portfolio',
     	html_content = f"<div>Investment: {calc_message['Investment']}</div><div>Number of each stock: {calc_message['Stocks']}</div>")
-    sg = SendGridAPIClient(api_key='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') 
+    sg = SendGridAPIClient(api_key='EMAIL KEY HERE') 
     response = sg.send(message)
 def calc_stock(investment, stock_info): # Calculate cost and number of stocks
     cost = 0.0
