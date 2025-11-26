@@ -9,7 +9,7 @@ import requests
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 # Functions
-def stock_api(choice):
+def stock_api(choice): # Gets stock information and returns info
     API_KEY = "STOCK API KEY HERE"
     URL = f"https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={API_KEY}"
     response = requests.get(URL)
