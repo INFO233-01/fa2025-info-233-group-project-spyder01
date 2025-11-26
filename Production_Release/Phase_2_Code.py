@@ -10,14 +10,15 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 # Functions
 def stock_api(choice): # Gets stock information and returns info
+    # Variables
     API_KEY = "STOCK API KEY HERE"
     URL = f"https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={API_KEY}"
-    response = requests.get(URL)
-    data = response.json()
-    low = data.get("top_losers", [])
+    response = requests.get(URL) # Stock API get Json
+    data = response.json() # Store Json data
+    low = data.get("top_losers", []) # create variables for stock categories
     active = data.get("most_actively_traded", [])
     high = data.get("top_gainers", [])
-    if choice == "low":
+    if choice == "low": # Check choice
         selected = low[:4]
     elif choice == "active":
         selected = active[:4]
@@ -28,7 +29,7 @@ def stock_api(choice): # Gets stock information and returns info
     stock_dict = {}
     # Build stock_string OUTSIDE the loop
     stock_string = "\nStock Information:\n-----------------------------------\n"
-    for stock in selected:
+    for stock in selected: # for loop to create stock info display
         ticker = stock.get("ticker")
         overview_url = f"https://www.alphavantage.co/query?function=OVERVIEW&symbol={ticker}&apikey={API_KEY}"
         overview_data = requests.get(overview_url).json()
@@ -52,23 +53,24 @@ def stock_api(choice): # Gets stock information and returns info
     print(stock_string)
     # Build email HTML
     stock_message = "<h2><b>Stock Information</b></h2><br>"
-    for name, info in stock_dict.items():
+    for name, info in stock_dict.items(): # for loop to create HTML display
         stock_message += (
             f"<b>{name}</b><br>"
             f"<b>Symbol</b>: {info['symbol']}<br>"
             f"<b>Price</b>: ${info['price']}<br>"
             f"<b>Change</b>: {info['change_amount']} ({info['change_percentage']})<br>"
             f"<b>Description</b>: {info['description']}<br><br>")
-    return selected, stock_message
+    return selected, stock_message # return stock info and email message
 def email_api(calc_message, stock_string): # Emails information to user
-    email_address = input("\nEnter your email address: ")
+    email_address = input("\nEnter your email address: ") # Ask user for email address
     message = Mail(from_email = 'clee24@ramapo.edu',
     				to_emails = email_address,
     				subject ='Stock Portfolio',
-    				html_content = f"{stock_string}<br>{calc_message}")
+    				html_content = f"{stock_string}<br>{calc_message}") # Variables for Email API
     sg = SendGridAPIClient(api_key='EMAIL API KEY HERE') 
-    sg.send(message)
-    print("\nYour email has been sent. Don't forget to check your spam folder."
+    sg.send(message) # Send email message
+    print("\nYour email has been sent."
+          "\nDon't forget to check your spam folder."
           "\nThank you for using Stock Portfolio Builder.")
 def calc_stock(investment, stock_dict): # Calculate cost and number of stocks
     cost = 0.0
@@ -80,12 +82,12 @@ def calc_stock(investment, stock_dict): # Calculate cost and number of stocks
     total = round(stock_amount * cost,2) # Total cost of purchased stocks
     remainder = round(investment - total,2) # Remaining balance after purchase
     print(f"Starting Balance: ${investment}\nVolume of each stock: {stock_amount}\n"
-          f"Investment: ${total}\nEnding balance: ${remainder}")
-    calc_string = (f"""<h2><b>Investment Information</b></h2><br>
+          f"Investment: ${total}\nEnding balance: ${remainder}") # Output Investment Info
+    calc_string = (f"""<h2><b>Investment Information</b></h2><br> 
                    <b>Starting Balance</b>: ${investment}<br><br>
                    <b>Volume of each stock</b>: {stock_amount}<br><br>
                    <b>Investment</b>: ${total}<br><br>
-                   <b>Ending Balance</b>: ${remainder}<br><br>""")
+                   <b>Ending Balance</b>: ${remainder}<br><br>""") # Investment email message
     return calc_string # Return output for email
 def main(): # Main Program
     # Variables
@@ -101,23 +103,23 @@ def main(): # Main Program
         try: # try except ValueError
             # Inputs to investment and choice
             print("How much would you like to invest into your stock portfolio?")
-            investment = int(input("Please enter an amount in $100 increments: "))
-            if investment % 100 == 0:
+            investment = int(input("Please enter an amount in increments of 100: "))
+            if investment % 100 == 0: # Check input
                 print("\nChoose from the following 3 stock categories:\n"
                       "\nLow: Stocks that have dropped the most today."
                       "\nActive: Stocks that were traded the most today."
                       "\nHigh: Stocks that have increased the most today.\n")
                 answer = input("Please enter low, active or high: ")
             else:
-                print(f"{investment} is not an increment of $100")
+                print(f"{investment} is not an increment of 100") # Error message
                 continue
-            if answer.lower() in stock_choices: # Checks if choice is in stock_choices
-                choice = answer.lower()   
+            if answer.lower() in stock_choices: # Checks if answer is in stock_choices
+                choice = answer.lower() # lowercase answer as choice
                 break
             else:
-                print("Please enter a valid input.\n")
+                print("Please enter a valid input.\n") # Error message
         except ValueError:
-            print("Please enter a valid input.\n")
+            print("Please enter a valid input.\n") # Error message
     stock_dict, stock_string = stock_api(choice) # Get stock information
     calc_message = calc_stock(investment, stock_dict) # Calculate stocks and investment
     while True: # while True loop for email input
@@ -128,6 +130,6 @@ def main(): # Main Program
         elif email.lower() == "no":
             break
         else:
-            print(f"{email} is not a valid input.")       
+            print(f"{email} is not a valid input.") # Error message  
 if __name__ =="__main__":  
 	main()
