@@ -9,16 +9,17 @@ import requests
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 # Functions
-def stock_api(choice): # Gets stock information and returns info
-    # Variables
+def stock_api(choice):
     API_KEY = "STOCK API KEY HERE"
     URL = f"https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={API_KEY}"
-    response = requests.get(URL) # API get call
-    data = response.json() # Variable for get data
+    response = requests.get(URL)
+    data = response.json()
+
     low = data.get("top_losers", [])
     active = data.get("most_actively_traded", [])
     high = data.get("top_gainers", [])
-    if choice == "low": # if elif else to check choice
+
+    if choice == "low":
         selected = low[:4]
     elif choice == "active":
         selected = active[:4]
@@ -26,31 +27,53 @@ def stock_api(choice): # Gets stock information and returns info
         selected = high[:4]
     else:
         selected = []
+
     stock_dict = {}
-    for i, stock in enumerate(selected): # for loop to create stock_dict
-        stock_dict[f"Stock {i+1}"] = {
-            "symbol": stock.get("ticker"),
+
+    # Build stock_string OUTSIDE the loop
+    stock_string = "Stock Information:\n-----------------------------------\n"
+
+    for stock in selected:
+        ticker = stock.get("ticker")
+        overview_url = f"https://www.alphavantage.co/query?function=OVERVIEW&symbol={ticker}&apikey={API_KEY}"
+        overview_data = requests.get(overview_url).json()
+
+        company_name = overview_data.get("Name", ticker)
+        description = overview_data.get("Description", "Description is unavailable.")
+        short_description = description[:250] + "..." if len(description) > 250 else description
+
+        stock_dict[company_name] = {
+            "symbol": ticker,
             "price": stock.get("price"),
             "change_amount": stock.get("change_amount"),
-            "change_percentage": stock.get("change_percentage")}
-    stock_string = "Stock Information:\n"
-    stock_string += "-----------------------------------\n"
-    for key, info in stock_dict.items(): # for loop to create stock_string
+            "change_percentage": stock.get("change_percentage"),
+            "description": short_description
+        }
+
+        # Append to text summary
         stock_string += (
-            f"{key}:\n"
-            f"  Symbol: {info['symbol']}\n"
-            f"  Price: ${info['price']}\n"
-            f"  Change: {info['change_amount']} ({info['change_percentage']})\n"
-            f"-----------------------------------\n")
-    print(stock_string) # Output stock_string: stock information
-    stock_message = "<h2><b>Stock Information</b><br></h2>"
-    for key, info in stock_dict.items(): # for loop to create stock_string for email
+            f"{company_name}:\n"
+            f"  Symbol: {ticker}\n"
+            f"  Price: ${stock.get('price')}\n"
+            f"  Change: {stock.get('change_amount')} ({stock.get('change_percentage')})\n"
+            f"  Description: {short_description}\n"
+            f"-----------------------------------\n"
+        )
+
+    print(stock_string)
+
+    # Build email HTML
+    stock_message = "<h2><b>Stock Information</b></h2><br>"
+    for name, info in stock_dict.items():
         stock_message += (
-            f"<b>{key}</b><br>"
-            f"  Symbol: {info['symbol']}<br>"
-            f"  Price: ${info['price']}<br>"
-            f"  Change: {info['change_amount']} ({info['change_percentage']})<br><br>")
-    return selected, stock_message # Return selected, stock_string
+            f"<b>{name}</b><br>"
+            f"Symbol: {info['symbol']}<br>"
+            f"Price: ${info['price']}<br>"
+            f"Change: {info['change_amount']} ({info['change_percentage']})<br>"
+            f"<i>Description:</i> {info['description']}<br><br>"
+        )
+
+    return selected, stock_message
 def email_api(calc_message, stock_string): # Emails information to user
     email_address = input("\nEnter your email address: ")
     message = Mail(from_email = 'clee24@ramapo.edu',
