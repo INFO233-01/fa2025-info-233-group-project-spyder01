@@ -67,8 +67,9 @@ def email_api(calc_message, stock_string): # Emails information to user
     				subject ='Stock Portfolio',
     				html_content = f"{stock_string}<br>{calc_message}")
     sg = SendGridAPIClient(api_key='EMAIL API KEY HERE') 
-    response = sg.send(message)
-    print("\nYour email has been sent.\nThank you for using Stock Portfolio Builder.")
+    sg.send(message)
+    print("\nYour email has been sent. Don't forget to check your spam folder."
+          "\nThank you for using Stock Portfolio Builder.")
 def calc_stock(investment, stock_dict): # Calculate cost and number of stocks
     cost = 0.0
     stock_amount = 0
@@ -102,10 +103,10 @@ def main(): # Main Program
             print("How much would you like to invest into your stock portfolio?")
             investment = int(input("Please enter an amount in $100 increments: "))
             if investment % 100 == 0:
-                print("\nChoose from the following 3 stock categories:")
-                print("\nLow: Stocks that have dropped the most today.")
-                print("Active: Stocks that were traded the most today.")
-                print("High: Stocks that have increased the most today.\n")
+                print("\nChoose from the following 3 stock categories:\n"
+                      "\nLow: Stocks that have dropped the most today."
+                      "\nActive: Stocks that were traded the most today."
+                      "\nHigh: Stocks that have increased the most today.\n")
                 answer = input("Please enter low, active or high: ")
             else:
                 print(f"{investment} is not an increment of $100")
