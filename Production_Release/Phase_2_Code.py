@@ -10,15 +10,14 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 # Functions
 def stock_api(choice): # Gets stock information and returns info
-    # Variables
     API_KEY = "STOCK API KEY HERE"
     URL = f"https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={API_KEY}"
-    response = requests.get(URL) # API get call
-    data = response.json() # Variable for get data
+    response = requests.get(URL)
+    data = response.json()
     low = data.get("top_losers", [])
     active = data.get("most_actively_traded", [])
     high = data.get("top_gainers", [])
-    if choice == "low": # if elif else to check choice
+    if choice == "low":
         selected = low[:4]
     elif choice == "active":
         selected = active[:4]
@@ -27,30 +26,40 @@ def stock_api(choice): # Gets stock information and returns info
     else:
         selected = []
     stock_dict = {}
-    for i, stock in enumerate(selected): # for loop to create stock_dict
-        stock_dict[f"Stock {i+1}"] = {
-            "symbol": stock.get("ticker"),
+    # Build stock_string OUTSIDE the loop
+    stock_string = "\nStock Information:\n-----------------------------------\n"
+    for stock in selected:
+        ticker = stock.get("ticker")
+        overview_url = f"https://www.alphavantage.co/query?function=OVERVIEW&symbol={ticker}&apikey={API_KEY}"
+        overview_data = requests.get(overview_url).json()
+        company_name = overview_data.get("Name", ticker)
+        description = overview_data.get("Description", "Description is unavailable.")
+        short_description = description[:250] + "..." if len(description) > 250 else description
+        stock_dict[company_name] = {
+            "symbol": ticker,
             "price": stock.get("price"),
             "change_amount": stock.get("change_amount"),
-            "change_percentage": stock.get("change_percentage")}
-    stock_string = "Stock Information:\n"
-    stock_string += "-----------------------------------\n"
-    for key, info in stock_dict.items(): # for loop to create stock_string
+            "change_percentage": stock.get("change_percentage"),
+            "description": short_description}
+        # Append to text summary
         stock_string += (
-            f"{key}:\n"
-            f"  Symbol: {info['symbol']}\n"
-            f"  Price: ${info['price']}\n"
-            f"  Change: {info['change_amount']} ({info['change_percentage']})\n"
+            f"{company_name}\n"
+            f"  Symbol: {ticker}\n"
+            f"  Price: ${stock.get('price')}\n"
+            f"  Change: {stock.get('change_amount')} ({stock.get('change_percentage')})\n"
+            f"  Description: {short_description}\n"
             f"-----------------------------------\n")
-    print(stock_string) # Output stock_string: stock information
-    stock_message = "<h2><b>Stock Information</b><br></h2>"
-    for key, info in stock_dict.items(): # for loop to create stock_string for email
+    print(stock_string)
+    # Build email HTML
+    stock_message = "<h2><b>Stock Information</b></h2><br>"
+    for name, info in stock_dict.items():
         stock_message += (
-            f"<b>{key}</b><br>"
-            f"  Symbol: {info['symbol']}<br>"
-            f"  Price: ${info['price']}<br>"
-            f"  Change: {info['change_amount']} ({info['change_percentage']})<br><br>")
-    return selected, stock_message # Return selected, stock_string
+            f"<b>{name}</b><br>"
+            f"<b>Symbol</b>: {info['symbol']}<br>"
+            f"<b>Price</b>: ${info['price']}<br>"
+            f"<b>Change</b>: {info['change_amount']} ({info['change_percentage']})<br>"
+            f"<b>Description</b>: {info['description']}<br><br>")
+    return selected, stock_message
 def email_api(calc_message, stock_string): # Emails information to user
     email_address = input("\nEnter your email address: ")
     message = Mail(from_email = 'clee24@ramapo.edu',
@@ -63,7 +72,6 @@ def email_api(calc_message, stock_string): # Emails information to user
 def calc_stock(investment, stock_dict): # Calculate cost and number of stocks
     cost = 0.0
     stock_amount = 0
-    email_message = {}
     for number in range(0, 4): # Adds all 4 stocks
         stock = float(stock_dict[number]['price'])
         cost += stock # The cost to buy 1 of each stock
@@ -81,22 +89,34 @@ def calc_stock(investment, stock_dict): # Calculate cost and number of stocks
 def main(): # Main Program
     # Variables
     stock_choices = ("low", "active", "high")
-    print("\nWelcome to Stock Portfolio Builder.\n")
+    intro = ("SPB will ask you for the amount you would like to invest."
+            " SPB will then ask to choose between high, active, or low stock performance." 
+            " Based on your choice, 4 stocks and their information will be displayed." 
+            " The investment amount will be divided among the 4 stocks." 
+            " SPB will ask if you want the stock portfolio emailed to you, and then ask for your email.\n")
+    print("\nWelcome to Stock Portfolio Builder (SPB).\n")
+    print(intro)
     while True: # while loop until correct input
         try: # try except ValueError
             # Inputs to investment and choice
-            investment = int(input("How much would you like to invest into your stock portfolio? "))
-            print("\nLow: Stocks with largest drop in value today.")
-            print("Active: Stocks with the highest trading volume today.")
-            print("High: Stocks with the largest rise in value today.\n")
-            choice = input("Please choose between low, active or high stock performance: ")
-            print("")
-            if choice.lower() in stock_choices: # Checks if choice is in stock_choices
+            print("How much would you like to invest into your stock portfolio?")
+            investment = int(input("Please enter an amount in $100 increments: "))
+            if investment % 100 == 0:
+                print("\nChoose from the following 3 stock categories:")
+                print("\nLow: Stocks that have dropped the most today.")
+                print("Active: Stocks that were traded the most today.")
+                print("High: Stocks that have increased the most today.\n")
+                answer = input("Please enter low, active or high: ")
+            else:
+                print(f"{investment} is not an increment of $100")
+                continue
+            if answer.lower() in stock_choices: # Checks if choice is in stock_choices
+                choice = answer.lower()   
                 break
             else:
-                print("Please enter a valid input.")
+                print("Please enter a valid input.\n")
         except ValueError:
-            print("Please enter a valid input.")
+            print("Please enter a valid input.\n")
     stock_dict, stock_string = stock_api(choice) # Get stock information
     calc_message = calc_stock(investment, stock_dict) # Calculate stocks and investment
     while True: # while True loop for email input
