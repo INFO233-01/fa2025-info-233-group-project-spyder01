@@ -63,7 +63,6 @@ def email_api(calc_message, stock_string): # Emails information to user
 def calc_stock(investment, stock_dict): # Calculate cost and number of stocks
     cost = 0.0
     stock_amount = 0
-    email_message = {}
     for number in range(0, 4): # Adds all 4 stocks
         stock = float(stock_dict[number]['price'])
         cost += stock # The cost to buy 1 of each stock
@@ -81,15 +80,23 @@ def calc_stock(investment, stock_dict): # Calculate cost and number of stocks
 def main(): # Main Program
     # Variables
     stock_choices = ("low", "active", "high")
-    print("\nWelcome to Stock Portfolio Builder.\n")
+    intro = ("SPB will ask you for the amount you would like to invest."
+            " SPB will then ask to choose between high, active, or low stock performance." 
+            " Based on your choice, 4 stocks and their information will be displayed." 
+            " The investment amount will be divided among the 4 stocks." 
+            " SPB will ask if you want the stock portfolio emailed to you, and then ask for your email.\n")
+    print("\nWelcome to Stock Portfolio Builder (SPB).\n")
+    print(intro)
     while True: # while loop until correct input
         try: # try except ValueError
             # Inputs to investment and choice
-            investment = int(input("How much would you like to invest into your stock portfolio? "))
-            print("\nLow: Stocks with largest drop in value today.")
-            print("Active: Stocks with the highest trading volume today.")
-            print("High: Stocks with the largest rise in value today.\n")
-            choice = input("Please choose between low, active or high stock performance: ")
+            print("How much would you like to invest into your stock portfolio?")
+            investment = int(input("Please enter an amount above 10,000: "))
+            print("\nChoose from the following 3 stock categories:")
+            print("\nLow: Stocks that have dropped the most today.")
+            print("Active: Stocks that were traded the most today.")
+            print("High: Stocks that have increased the most today.\n")
+            choice = input("Please enter low, active or high: ")
             print("")
             if choice.lower() in stock_choices: # Checks if choice is in stock_choices
                 break
